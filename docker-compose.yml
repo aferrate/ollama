@@ -1,0 +1,32 @@
+services:
+  webui:
+    container_name: uiollama
+    image: ghcr.io/open-webui/open-webui:main
+    ports:
+     - 8080:8080/tcp
+    environment:
+     - OLLAMA_BASE_URL=http://ollama:11434
+    volumes:
+      - ollama-webui-data:/app/backend/data
+    depends_on:
+     - ollama
+
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:rocm
+    ports:
+     - 11434:11434/tcp
+    environment:
+      OLLAMA_MODELS: /usr/share/ollama
+      HSA_OVERRIDE_GFX_VERSION: "11.0.0"
+      HIP_VISIBLE_DEVICES: "0"
+      OLLAMA_ORIGINS: chrome-extension://*
+    volumes:
+      - ollama-data:/root/.ollama
+    devices:
+      - /dev/kfd
+      - /dev/dri
+
+volumes:
+  ollama-data:
+  ollama-webui-data:
